@@ -1,0 +1,59 @@
+<%-include('layout/header.ejs')-%>
+<%-include('layout/broadcumbs.ejs')-%>
+<div class="container mt-5">
+    <div class="d-flex justify-content-end pe-5 mb-5">
+        <div>
+            <button class="btn btn-success">Import</button>
+            <a href="/add" class="btn btn-primary">Add</a>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th>Image</th>
+            <th>Firstname</th>
+            <th>Lastname</th>
+            <th>Email</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+            <%data.forEach(function (item){
+            %>
+            <tr>
+                <td><%-item.image-%></td>
+                <td><%-item.fname-%></td>
+                <td><%-item.lname-%></td>
+                <td><%-item.email-%></td>
+                <td>
+                    <button class="btn btn-sm btn-info">
+                        <i class="bi bi-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-primary">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+            <%
+                })
+            %>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-end">
+        <ul class="pagination pagination-sm">
+            <li class="page-item"><a class="page-link <%-(previousPage == null) ? "disabled" : ''-%>" href="<%-previousPage-%>">Previous</a></li>
+            <%
+            links.forEach(function(item){
+            %>
+                <li class="page-item "><a class="page-link <%-(item.active == true) ? "disabled" : ''-%>" href="<%-item.link-%>"><%-item.pageNo-%></a></li>
+            <%
+                })
+            %>
+            <li class="page-item"><a class="page-link <%-(nextPage == null) ? "disabled" : ''-%>" href="<%-nextPage-%>">Next</a></li>
+        </ul>
+    </div>
+</div>
+<%-include('layout/footer.ejs')-%>
