@@ -1,4 +1,4 @@
-const {MongoClient} = require('mongodb');
+const {MongoClient, ObjectId} = require('mongodb');
 const url = require('url');
 const queryString = require('querystring');
 const connection_string = "mongodb+srv://rakib:rakib@cluster0.w8xy4.mongodb.net/test";
@@ -9,6 +9,7 @@ const db_name = "crud";
 const HomePage = async (req, res) => {
     let page = 1;
     let request = req.query;
+
     if(request.page > 0){
         page = request.page;
     }
@@ -23,26 +24,27 @@ const HomePage = async (req, res) => {
         let previousPage = null;
         let nextPage = null;
         let links = [];
-        let numberOfPage = Math.ceil(totalRow / 7);
+
+        let showPerPage = 7;
+        (request.show == undefined || request.show == "undefined") ? showPerPage = 7 : showPerPage = request.show;
+
+        let numberOfPage = Math.ceil(totalRow / showPerPage);
         for(let pageNo = 1 ; pageNo <= numberOfPage; pageNo++ ){
             if(pageNo == page){
-                previousPage = ( Number(page) > 1) ? '/?page='+(Number(pageNo)-1) : null
-                nextPage =  (Number(page) < numberOfPage)  ? '/?page='+(Number(pageNo)+1) : null
+                previousPage = ( Number(page) > 1) ? '/?page='+(Number(pageNo)-1)+"&show="+showPerPage : null
+                nextPage =  (Number(page) < numberOfPage)  ? '/?page='+(Number(pageNo)+1)+"&show="+showPerPage : null
             }
             links.push({
                 pageNo: pageNo,
-                link: '/?page='+pageNo,
+                link: '/?page='+pageNo+"&show="+showPerPage,
                 active: (pageNo == page) ? true : false
             })
         }
 
 
-
-
-        let showPerPage = 7;
         let currentPage = page - 1;
-        let skip = currentPage * showPerPage;
-        let data = findAll.limit(showPerPage).skip(skip);
+        let skip = currentPage * Number(showPerPage);
+        let data = findAll.limit(Number(showPerPage)).skip(skip);
         let arr = [];
         await data.forEach((item) => {
             arr.push(item)
@@ -52,7 +54,8 @@ const HomePage = async (req, res) => {
             data: arr,
             links : links,
             previousPage: previousPage,
-            nextPage: nextPage
+            nextPage: nextPage,
+            showPerPage: showPerPage
         }
 
         // res.send(viewData);
@@ -66,11 +69,11 @@ const HomePage = async (req, res) => {
 
 }
 const AddPage = (req, res) => {
+
     res.render('add.ejs', req.query);
 }
 const Add = async (req, res) => {
     let request = req.body;
-
     await client.connect();
     let database = await client.db(db_name);
     let collection = await database.collection('users');
@@ -114,6 +117,18 @@ const Add = async (req, res) => {
     }
 }
 
+const View = async (req, res) => {
+    await client.connect();
+    let database = await client.db(db_name);
+    let collection = await database.collection('users');
+    let data = {
+        _id: new ObjectId(req.params.id)
+    }
+
+    let result = await collection.findOne(data);
+
+    res.render('view.ejs', result);
+}
 function validateInput(input){
 
     /*
@@ -141,4 +156,4 @@ function validateInput(input){
 
 }
 
-module.exports = {HomePage,AddPage, Add}
+module.exports = {HomePage,AddPage, Add, View}

@@ -2,9 +2,15 @@
 <%-include('layout/broadcumbs.ejs')-%>
 <div class="container mt-5">
     <div class="d-flex justify-content-end pe-5 mb-5">
-        <div>
-            <button class="btn btn-success">Import</button>
-            <a href="/add" class="btn btn-primary">Add</a>
+        <div class="d-flex">
+            <select id="numberOfView" class="form-select  me-2">
+                <option <%-(showPerPage == "7") ? "selected" : '' -%> value="7">7</option>
+                <option <%-(showPerPage == "10") ? "selected" : ''-%> value="10">10</option>
+                <option <%-(showPerPage == "15") ? "selected" : '' -%> value="15">15</option>
+                <option <%-(showPerPage == "20") ? "selected" : '' -%> value="20">20</option>
+            </select>
+            <button class="btn btn-success me-2">Import</button>
+            <a href="/add" class="btn btn-primary me-2">Add</a>
         </div>
     </div>
     <table class="table table-hover">
@@ -26,9 +32,9 @@
                 <td><%-item.lname-%></td>
                 <td><%-item.email-%></td>
                 <td>
-                    <button class="btn btn-sm btn-info">
+                    <a href="/view/<%-item._id-%>" class="btn btn-sm btn-info">
                         <i class="bi bi-eye"></i>
-                    </button>
+                    </a>
                     <button class="btn btn-sm btn-primary">
                         <i class="bi bi-pencil-square"></i>
                     </button>
@@ -56,4 +62,30 @@
         </ul>
     </div>
 </div>
+<script>
+    let numberOfView = document.getElementById('numberOfView');
+    numberOfView.addEventListener('change', function (){
+
+        let href = location.href.split('?')[1];
+        let redirect_with = "/";
+
+        if(typeof href != "undefined" ){
+            let href_vars = href.split('&');
+            let new_param = "";
+            href_vars.forEach(function (item){
+                var param = item.split('=');
+                if(param[0] != "show"){
+                    new_param += "&"+item
+                }
+            });
+            redirect_with = "/?show="+this.value+new_param;
+        }
+        else{
+            redirect_with = "/?show="+this.value;
+        }
+
+        location.href = redirect_with
+    })
+</script>
+
 <%-include('layout/footer.ejs')-%>
