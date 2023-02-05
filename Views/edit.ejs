@@ -1,0 +1,40 @@
+<%-include('layout/header.ejs')-%>
+<%-include('layout/broadcumbs.ejs')-%>
+    <div class="p-3">
+        <%if(typeof status != "undefined" && typeof status != "undefined"){%>
+        <%if(status == "false"){%>
+        <div class="alert text-center alert-danger" role="alert">
+            <%-message-%>
+        </div>
+        <%}else{%>
+        <div class="alert text-center alert-success" role="alert">
+            <%-message-%>
+        </div>
+        <%}%>
+        <%}%>
+    </div>
+
+    <div class="container mt-1">
+        <form method="post" action="/edit">
+            <input type="hidden" name="_id" value="<%-_id-%>">
+            <div class="form-group">
+                <label for="comment">First Name:</label>
+                <input name="fname" value="<%-fname-%>" type="text" class="form-control mt-2" placeholder="Example: Jhon">
+            </div>
+            <div class="form-group mt-2">
+                <label for="comment">Last Name:</label>
+                <input name="lname" value="<%-lname-%>" type="text" class="form-control mt-2" placeholder="Example: Doe">
+            </div>
+            <div class="form-group mt-2">
+                <label for="comment">Email:</label>
+                <input name="email" value="<%-email-%>" type="text" class="form-control mt-2" placeholder="Example: yourmail@example.com">
+            </div>
+            <div class="form-group mt-2">
+                <label for="comment">Image:</label>
+                <input name="file" type="file" class="form-control mt-2" placeholder="Example: yourmail@example.com">
+            </div>
+            <button type="submit" class="btn btn-primary mt-4">Update</button>
+            <a href="/" class="btn btn-primary mt-4">Back</a>
+        </form>
+    </div>
+<%-include('layout/footer.ejs')-%>

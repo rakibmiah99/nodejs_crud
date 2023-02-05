@@ -129,6 +129,79 @@ const View = async (req, res) => {
 
     res.render('view.ejs', result);
 }
+
+const EditPage = async (req, res) => {
+    await client.connect();
+    let database = await client.db(db_name);
+    let collection = await database.collection('users');
+    let data = {
+        _id: new ObjectId(req.params.id)
+    }
+
+    let result = await collection.findOne(data);
+
+    let new_res = {...result, ...req.query };
+
+    res.render('edit.ejs', new_res);
+}
+
+const Edit = async function(req, res){
+    let request = req.body;
+    await client.connect();
+    let database = await client.db(db_name);
+    let collection = await database.collection('users');
+    let validateArr = [
+        {name: "First Name", required: true, value: request.fname},
+        {name: "Last Name", required: true, value: request.lname},
+        {name: "Email", required: true, value: request.email},
+    ]
+
+    let data = null;
+    let user_id = new ObjectId(request._id);
+    let filterCriteria = {_id : user_id}
+    let validate = validateInput(validateArr);
+    if(validate.status == true){
+        data =   {
+            fname: request.fname,
+            lname: request.lname,
+            email: request.email,
+            image: ''
+        }
+
+    }
+    else{
+        return res.redirect(`/edit/${user_id}?${queryString.stringify(validate)}`);
+    }
+
+
+    let result = await collection.updateOne(filterCriteria,{$set: data});
+
+    if(result.acknowledged == true){
+        let withData = queryString.stringify({
+            status: true,
+            message: "Updated successfully"
+        });
+        return res.redirect(`/edit/${user_id}?${withData}`);
+    }
+    else{
+        let withData = queryString.stringify({
+            status: false,
+            message: 'something went wrong. try again'
+        });
+        return res.redirect(`/edit/${user_id}?${withData}`);
+    }
+}
+
+
+
+const DeletePage = (req, res) => {
+    return res.render('delete.ejs',{id: req.params.id});
+}
+const Delete = (req, res) => {
+    return res.render('delete.ejs');
+}
+
+
 function validateInput(input){
 
     /*
@@ -156,4 +229,4 @@ function validateInput(input){
 
 }
 
-module.exports = {HomePage,AddPage, Add, View}
+module.exports = {HomePage,AddPage, Add, View, Edit, EditPage, DeletePage, Delete}
